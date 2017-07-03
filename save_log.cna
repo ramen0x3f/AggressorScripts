@@ -1,0 +1,37 @@
+# Description:
+#	Use to export command output, so you don't have to grep beacon logs for info.
+
+# Usage:
+# 	> start_log
+# 	> [commands]
+# 	> stop_log
+
+# Output:
+#	cobaltstrike/saved_logs/[beacon id]_yyyyMMdd_HHmmssSSS.log
+
+global('$logging $save_output');
+
+alias start_log {
+	$logging = true; 
+	
+	if (!-exists "./saved_logs/" ) { #check if saved_logs exists
+		mkdir("./saved_logs"); #create otherwise
+	}
+	
+	$filepath = "./saved_logs/" . $1 . "_" . formatDate("yyyyMMdd_HHmmssSSS") . ".log";
+	if (!-exists $filepath) {
+		createNewFile($filepath);
+		$save_output = openf(">" . $filepath);
+	}
+}
+
+alias stop_log {
+	$logging = false;
+	closef($save_output);
+}
+
+on beacon_output {
+	if ( $logging ) {
+		writeb($save_output, $2);
+	}
+}
