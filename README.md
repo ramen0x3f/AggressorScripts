@@ -1,5 +1,7 @@
 # AggressorScripts
 
+Disclaimer: don't use these on anything you don't have the owner's explicit permission to test on. That's mean. Also illegal. 
+
 ## credpocalypse.cna
 Monitor beacons and pick off users as they log in. Set the time interval (default 5m) and Credpocalypse will watch your beacons for new users in the running processes. If they aren't in the Credentials tab already, Credpocalypse will run logonpasswords.
 
