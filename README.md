@@ -10,16 +10,16 @@ NOTE: Your beacon will only be interrupted if logonpasswords is run. There's no 
 Usage:
 1. Aliases
 ```
-begin_credpocalypse				- watch current beacon
-end_credpocalypse [all]			- stop watching current/all beacon/s
+begin_credpocalypse		- watch current beacon
+end_credpocalypse [all]		- stop watching current/all beacon/s
 credpocalypse_interval [time]	- 1m, 5m (default), 10m, 30m, 60m
 ```
 
 2. Right click beacon(s) to get a pop up menu that lets you 
-..* Add to watchlist
-..* Remove from watchlist
-..* Change time interval that Credpocalypse checks watchlist
-..* View the watchlist 
+* Add to watchlist
+* Remove from watchlist
+* Change time interval that Credpocalypse checks watchlist
+* View the watchlist 
 
 ## save_log.cna 
 Use to export command output, so you don't have to grep beacon logs for info.
