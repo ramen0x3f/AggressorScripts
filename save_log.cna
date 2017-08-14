@@ -1,12 +1,14 @@
-# Description:
-#	Use to export command output, so you don't have to grep beacon logs for info.
+#### Aggressor script to simplify exporting command output 
+###  Author: Alyssa (ramen0x3f)
 
-# Usage:
+### Usage ###
+# 1. Import into Cobalt Strike
+# 2. From beacon run
 # 	> start_log
 # 	> [commands]
 # 	> stop_log
 
-# Output:
+### Output ###
 #	cobaltstrike/saved_logs/[beacon id]_yyyyMMdd_HHmmssSSS.log
 
 global('%logging');
