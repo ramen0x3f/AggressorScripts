@@ -77,7 +77,7 @@ sub get_users {
 sub steal_them_creds {
 	#Log what you're doing (this output shows in Script Console)
 	@pids = map({ return beacon_info($1, "pid"); }, @watchlist);
-	println("Stealing creds for PIDs: " . join(", ", @pids));
+	println("Looking for new users in PIDs: " . join(", ", @pids));
 
 	#Update creds list
 	clear(@captured_creds);
