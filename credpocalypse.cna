@@ -123,16 +123,16 @@ alias end_credpocalypse {
 }
 
 alias credpocalypse_interval {
-	if ( lc($2) cmp "1m" ) {
+	if ( $2 cmp "1m" || $2 cmp "1M" ) {
 		$interval = "1m";
 	}
-	else if ( lc($2) cmp "10m" ) {
+	else if ( $2 cmp "10m" || $2 cmp "10M"  ) {
 		$interval = "10m";
 	}
-	else if ( lc($2) cmp "10m" ) {
+	else if ( $2 cmp "30m" || $2 cmp "30M" ) {
 		$interval = "30m";
 	}
-	else if ( lc($2) cmp "60m" ) {
+	else if ( $2 cmp "60m" || $2 cmp "60M" ) {
 		$interval = "60m";
 	}
 	else {
