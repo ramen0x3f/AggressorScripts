@@ -1,0 +1,191 @@
+#### Utilities ####
+## Author: Alyssa (ramen0x3f)
+## Last Updated: 2017-10-19
+
+## Copy any of these sub functions into your CNAs.
+## Aliases at the bottom show examples of how to call.
+
+## Included:
+# get_env COMSPEC							- print value of env variable
+# get_pid explorer							- print 1st PID for given proc name
+# get_users									- return array of logged on users
+# lower C:\Users\Public\Downloads\tmp.txt 	- lc() without breaking on \'s 
+# parse_args -arg1 val1 -arg2 val2 -switch1	- easier than positional arguments
+# upper C:\Users\Public\Downloads\tmp.txt 	- uc() without breaking on \'s
+
+##########
+## Subs ##
+##########
+
+sub get_env { 
+	# Description #
+	###############
+	## Pass in name of environment variable and print value to screen
+	## Notes:
+	## 		1. Calls cmd.exe because it's using bshell
+	##		2. Shell doesn't have a callback so it prints (doesn't return)
+	#  Arguments  #
+	###############
+	## 1	beacon id (already $1 for any alias you're using)
+	## 2	name of environment variable
+	bshell($1, "echo " . $2 . " is %" . $2 . "%");
+}
+
+sub get_pid {
+	# Description #
+	###############
+	## **Made by Raffi** (see Aggressor Script documentation for bps)
+	## Get the PID of a process by name. 
+	## Note: returns the first PID it finds (if there are multiple)
+	#  Arguments  #
+	###############
+	## 1	beacon id (already $1 for any alias you're using)
+	## 2	callback
+	## 3	name of process to find
+
+	$to_match = $3;
+	bps($1, lambda({
+		local('$pid $name $entry');
+		foreach $entry (split("\n", $2)) {
+			($name, $null, $pid) = split("\\s+", $entry);
+			if ((lc($name) cmp lc($to_match)) == 0) {
+				[$callback: $1, $name, $pid];
+				return;
+			}
+		}
+	}, $callback => $2));
+}
+
+sub get_users { 
+	# Description #
+	###############
+	## Get a list of users by checking the owners of running processes
+	## Note:
+	##		1. You won't see all the usernames if you aren't admin.
+	##		2. Requires the upper() function from ramen0x3f's utils.cna
+	#  Arguments  #
+	###############
+	## 1	Beacon ID to get users from
+
+	bps($1, lambda({
+		@users = @();
+		local('$uname $entry $extra @users');
+
+		foreach $entry (split("\n", $2)) {
+			($null, $null, $null, $null, $uname) = split("\\s+", $entry);
+
+			$uname = upper($uname);
+			
+			if (($uname cmp "NT") == 0 || strlen($uname) == 0 || $uname in @users) { 
+				continue; #ignore NT or prev added accounts
+			}
+			else {
+				add(@users, $uname);
+			}
+		}
+
+		[$callback: $1, @users];
+	}, $callback => $2));
+}
+
+sub lower {
+	# Description #
+	###############
+	## lc breaks on backslashes. Also split. Really everything breaks. 
+	#  Arguments  #
+	###############
+	## 1	String to lowercase
+
+	return join("\\", map({ return lc($1); }, split("\\\\", $1)));
+}
+
+sub parse_args {
+	# Description #
+	###############
+	## Add arguments and switches to your function 
+	## instead of everything being positional and sketchy.
+	#  Arguments  #
+	###############
+	## 1	Array of arguments from your initial function
+	
+	local('%args $get_val @to_check $bid');
+
+	if ( @_[0][0] in beacon_ids() ) {
+		$bid = @_[0][0];
+		@to_check = sublist(@_[0], 1); #Excludes the $bid
+	}
+	else {
+		@to_check = @_[0];
+	}
+	
+	foreach $a (@to_check) {
+		if( (charAt($a,0) cmp "-") == 0 ) { #Create keys for args
+			$get_val = substr($a, 1);
+			%args[$get_val] = true; #Treat like a switch by default
+		}
+		else if( $get_val ) { #Save value of key
+			%args[$get_val] = $a;
+			$get_val = $null;
+		}
+		else if ( $bid ) {  #Print to beacon if command was run from beacon
+			berror($1, "Something went wrong processing: " . $a);
+		}
+		else { #Print to script console if command was run from script console
+			println("Something went wrong processing: " . $a);
+		}
+	}
+
+	return %args;
+}
+
+sub upper {
+	# Description #
+	###############
+	## uc breaks on backslashes. Also split. Really everything breaks. 
+	#  Arguments  #
+	###############
+	## 1	String to capitalize
+
+	return join("\\", map({ return uc($1); }, split("\\\\", $1)));
+}
+
+##############
+## Examples ##
+##############
+
+alias get_env {
+	## Example: get_env COMSPEC
+	get_env($1, $2);
+}
+
+alias get_pid {
+	## Example: get_pid explorer.exe
+	get_pid($1, { 	
+				blog($1, "Found " . $2 . " at " . $3);
+			}, $2);
+}
+
+alias get_users {
+	## Example: get_users
+	get_users($1, {
+		@users = $2; 
+		blog($1, @users);
+	});
+}
+
+alias lower {
+	## Example: lower "C:\\Users\\Public\\Downloads\\tmp.txt"
+	blog($1, lower($2));
+}
+
+alias parse_args {
+	## Example: parse_args -arg1 val1 -arg2 val2 -switch1
+	foreach $key => $value (parse_args(@_)) {
+		blog($1, "Argument: " . $key . " Value: " . $value);
+	}
+}
+
+alias upper {
+	## Example: upper "C:\\Users\\Public\\Downloads\\tmp.txt"
+	blog($1, upper($2));	
+}

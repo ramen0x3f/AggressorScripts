@@ -35,3 +35,19 @@ stop_log
 
 Output:
 	cobaltstrike/saved_logs/[beacon id]_yyyyMMdd_HHmmssSSS.log
+
+## utils.cna 
+A collection of "sub" functions to do random things. Copy into your CNAs and refer to the "alias" functions at the bottom of the file for examples on how to call each utility.
+
+Included:
+```
+get_env COMSPEC								- print value of env variable
+get_pid explorer							- print 1st PID for given proc name
+get_users									- return array of logged on users
+lower C:\Users\Public\Downloads\tmp.txt 	- lc() without breaking on \'s 
+parse_args -arg1 val1 -arg2 val2 -switch1	- easier than positional arguments
+upper C:\Users\Public\Downloads\tmp.txt 	- uc() without breaking on \'s
+```
+
+Note: 
+Raffi wrote the get_pid function (https://www.cobaltstrike.com/aggressor-script/functions.html#bppid). Included here for easy reference. 
