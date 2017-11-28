@@ -46,6 +46,12 @@ alias stop_log {
 
 on beacon_output {
 	if ( %logging[$1] ) { 
-		writeb(%logging[$1], $2);
+		println(%logging[$1], $2);
+	}
+}
+
+on beacon_tasked {
+	if ( %logging[$1] ) {
+		println(%logging[$1], "[" . formatDate($3, 'yyyy-MM-dd HH:mm:ss z') . "] BID " . $1 . " " . $2);
 	}
 }
