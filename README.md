@@ -5,6 +5,8 @@ Disclaimer: These scripts are to help you audit your machines or machines you're
 ## credpocalypse.cna
 Monitor beacons and pick off users as they log in. Set the time interval (default 5m) and Credpocalypse will watch your beacons for new users in the running processes. If they aren't in the Credentials tab already, Credpocalypse will run logonpasswords.
 
+Pro Tip: Load/run with ./agscript to watch all beacons headlessly. Output will include timestamp/beacon IDs to track when logonpasswords was run. 
+
 NOTE: Your beacon will only be interrupted if logonpasswords is run. There's no callback, so I can't smother the output. :-/ 
 
 NOTE AGAIN: In the Watchlist and Script Console you'll see "Running on PIDs: x". X is the PID of the beacon process on the remote system (what you see on the right side of your beacon list). In the background, it's actually using the beacon IDs assigned by Cobalt. I just print the PID to make it easier for you to glance at beacons and know where Credpocalypse is running. 
@@ -16,15 +18,20 @@ begin_credpocalypse		- watch current beacon
 end_credpocalypse [all]		- stop watching current/all beacon/s
 credpocalypse_interval [time]	- 1m, 5m (default), 10m, 30m, 60m
 ```
-
-2. Right click beacon(s) to get a pop up menu that lets you 
+2. Commands
+```
+begin_credpocalypse		- watch *all* beacons
+end_credpocalypse [all]		- stop watching all beacons
+credpocalypse_interval [time]	- 1m, 5m (default), 10m, 30m, 60m
+```
+3. Right click beacon(s) to get a pop up menu that lets you 
 * Add to watchlist
 * Remove from watchlist
 * Change time interval that Credpocalypse checks watchlist
 * View the watchlist 
 
 ## save_log.cna 
-Use to export command output, so you don't have to grep beacon logs for info.
+Use to export command output, so you don't have to grep beacon logs for info. 
 
 Usage:
 ```
@@ -33,8 +40,12 @@ start_log
 stop_log
 ```
 
-Output:
-	cobaltstrike/saved_logs/[beacon id]_yyyyMMdd_HHmmssSSS.log
+Output: cobaltstrike/saved_logs/[beacon id]_yyyyMMdd_HHmmssSSS.log
+```
+[2017-12-27 11:36:24 EST] BID: 12345 Tasked beacon to run: whoami
+received output: 
+WORKSTATION\Administrator
+```
 
 ## utils.cna 
 A collection of "sub" functions to do random things. Copy into your CNAs and refer to the "alias" functions at the bottom of the file for examples on how to call each utility.
