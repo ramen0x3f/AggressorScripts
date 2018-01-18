@@ -2,6 +2,28 @@
 
 Disclaimer: These scripts are to help you audit your machines or machines you're authorized to audit. Don't use these on anything you don't have the owner's explicit permission to test on. That's mean. Also illegal. 
 
+## compromised_log.rpt
+This report generates an appendix with tables of all hosts where a beacon was spawned and all users that were compromised/added to the "Credentials" tab. 
+
+Usage:
+```
+1. Import by clicking Cobalt Strike > Preferences > Reporting > Select template
+2. Generate by clicking Reporting > 1. Compromise Log
+```
+
+Notes on "Affected Hosts":
+* Deduplicated by hostname
+* AccountsUsed -> User accounts that beacons were spawned under. 
+* FirstSession -> Date/time of first session/beacon opened on a host.
+
+Notes on "Affected Users":
+* Deduplicated by "username::realm"
+* Domain -> will include hostname if it's a local account
+* Source -> host where the credential was gathered 
+* Cleartext -> if password is not NTLM hash && source == mimikatz
+* Cracked -> if password is not NTLM hash && source == manual (generalized but assuming was added after cracking)
+* Hash -> at least one password entry for the user was an NTLM hash
+
 ## credpocalypse.cna
 Monitor beacons and pick off users as they log in. Set the time interval (default 5m) and Credpocalypse will watch your beacons for new users in the running processes. If they aren't in the Credentials tab already, Credpocalypse will run logonpasswords.
 
