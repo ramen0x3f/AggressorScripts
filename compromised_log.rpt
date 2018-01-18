@@ -1,0 +1,146 @@
+#### Compromised Log - Appendix Generator ####
+## Author: Alyssa (ramen0x3f)
+## Last Updated: 2018-01-17
+
+## This report generates an appendix with tables of all hosts where a beacon was spawned
+## and all users that were compromised/added to the "Credentials" tab. 
+
+## To use:
+# 1. Import by clicking Cobalt Strike > Preferences > Reporting > Select template
+# 2. Generate by clicking Reporting > 1. Compromise Log
+
+## Notes on "Affected Hosts" 
+# Deduplicated by hostname
+# AccountsUsed -> User accounts that beacons were spawned under. 
+# FirstAccess -> Date/time of first session/beacon opened on a host.
+
+## Notes on "Affected Users" 
+# Deduplicated by "username:::realm"
+# Domain -> will include hostname if it's a local account
+# Source -> host where the credential was gathered 
+# Cleartext -> if password is not NTLM hash && source == mimikatz
+# Cracked -> if password is not NTLM hash && source == manual (generalized but assuming was added after cracking)
+# Hash -> at least one password entry for the user was an NTLM hash
+
+describe("Compromise Log", "This report outputs an appendix of compromised hosts and accounts used during the engagement.");
+
+report "Compromise Log" {
+	page "rest" {
+		h1("Appendix X: Compromised Systems and Accounts"); 
+		
+
+		#### Hosts ####
+		## Hostname, Internal IP, User Accounts Used
+		h2("Affected Hosts");
+		bookmark("Affected Hosts");
+		p("The table below includes all hosts where a CobaltStrike session was created. A list of internal IP addresses, accounts used to spawn each session, and the date/time of first session creation is included for each host.");
+		br();
+
+		@cols = @("Hostname", "InternalAddress", "AccountsUsed", "FirstSession");
+		@widths = @("auto", "1.5in", "auto", "auto");
+		@rows = @();
+		%hosts = %();
+		
+		#Get list of unique hosts
+		foreach %b (agSessions($3)) {
+			#Add in details
+			$uname = replace(%b['user'], '\*', "(privileged)");
+
+			#If host already added
+			if ( %b['computer'] in %hosts ) {
+				if ( $uname !in %hosts[%b['computer']]['users'] ) {
+					add(%hosts[%b['computer']]['users'], $uname);
+				}
+				if ( %b['internal'] !in %hosts[%b['computer']]['ip'] ) {
+					add(%hosts[%b['computer']]['ip'], %b['internal']);
+				}
+				if ( %b['opened'] < %hosts[%b['computer']]['opened'] ) {
+					$hosts[%b['computer']]['opened'] = %b['opened'];
+				}
+			}
+			#If new host
+			else {
+				%hosts[%b['computer']] = %(users => @($uname), ip => @(%b['internal']), opened => %b['opened']);
+			}
+		}
+
+		#Sort
+		foreach $x (reverse(sorta(keys(%hosts)))) {
+			add(@rows, %( Hostname => $x, InternalAddress => join("\n", sorta(%hosts[$x]['ip'])), AccountsUsed => join(", ", sorta(%hosts[$x]['users'])), FirstSession => formatDate(%hosts[$x]['opened'], "yyyy.MM.dd HH:MM z")));
+		}
+
+		#Print table
+		table(@cols, @widths, @rows);
+
+
+		#### Users ####
+		## Username, Domain, Source (Host gathered from), Cleartext (from Mimkatz), Cracked Hash, Hash (NTLM)
+		h2("Affected Users");
+		bookmark("Affected Users");
+		p("The following table lists any user or account whose credentials were harvested throughout this engagement. Each entry represents a unique username and domain combination. In some cases the Domain column includes a hostname, indicating the account was a local user.");
+		br();
+		p(" The Source column represents the host where the credentials were gathered - for example, by using Mimikatz. If a user is marked as 'Cleartext', this indicates the user's cleartext password (not just NTLM hash) was gathered with Mimikatz. The Cracked column will indicate if a user's cleartext password was cracked and manually added. The Hash column shows if the user's NTLM hash was obtained.");
+		br();
+
+		@cols = @("Username", "Domain", "Source", "Cleartext", "Cracked", "Hash");
+		@widths = @("1.5in", "1.5in", "1.25in", "1in", "1in", ".5in");
+		@rows = @();
+		%users = %();
+		
+		#Get list of unique users (username + :: + realm)
+		foreach %u (agCredentials($3)) {
+			#Add in user details
+			$uname = lc(split("@", split("\\\\", %u['user'])[-1])[0]);
+			$realm = lc(split("\\\\", %u['realm'])[0]);
+			$concat = $uname . "::" . $realm;
+			
+			#If user already added
+			if ( $concat in %users ) {
+				if ( %u['host'] !in %users[$concat]['host'] ) {
+					add(%users[$concat]['host'], %u['host']);
+				}
+				if ( %u['password'] !in %users[$concat]['pass'] ) {
+					add(%users[$concat]['pass'], %u['password']);
+				}
+				if ( %u['source'] !in %users[$concat]['source'] ) {
+					add(%users[$concat]['source'], %u['source']);
+				}
+			}
+			#If new user
+			else {
+				%users[$concat] = %(user => $uname, realm => $realm, host => @(%u['host']), pass => @(%u['password']), source => @(%u['source']));
+			}
+			
+		}
+
+		#Sort and process remaining fields
+		foreach $x (reverse(sorta(keys(%users)))) {
+			%u = %users[$x];
+			$mimi = "-"; 
+			$crack = "-";
+			$hash = "-";
+
+			#Process password(s)
+			$regex_hash = "^[a-zA-Z0-9]{32}$";
+			foreach $p (%u['pass']) {
+				if ( $p ismatch $regex_hash ) {
+					$hash = "Yes";
+				}
+				else {
+					if ( "mimikatz" in %u['source'] ) { #If not hash and from mimikatz, assume cleartext
+						$mimi = "Yes";
+					}
+					else if ( "manual" in %u['source'] ) { #If not hash and manually added, assume cracked
+						$crack = "Yes";
+					}
+				}
+			}
+
+			#Add to final table
+			add(@rows, %( Username => %u['user'], Domain => %u['realm'], Source => join("\n", sorta(%u['host'])), Cleartext => $mimi, Cracked => $crack, Hash => $hash) );
+		}
+
+		#Print table
+		table(@cols, @widths, @rows);
+	}
+}
