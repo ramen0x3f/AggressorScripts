@@ -2,6 +2,24 @@
 
 Disclaimer: These scripts are to help you audit your machines or machines you're authorized to audit. Don't use these on anything you don't have the owner's explicit permission to test on. That's mean. Also illegal. 
 
+## cdolla.cna
+Find targets where you're local admin and list users who logged in within the last 90 days.
+
+Like Chris King's (raikiasec) CredNinja but less fancy. And in Aggressor. (See also: https://github.com/Raikia/CredNinja)
+
+Usage:
+```
+1. To scan a list of targets
+ > Select all hosts in the Targets tab, right click, add note "cdolla"
+ > From the beacon with the correct token: cdolla [-users]
+2. To scan a single target
+ > cdolla 10.10.10.10 [-users]
+```
+
+Notes:
+* c is an alias for cdolla
+* if -users is specified, will also print users who logged in within last 90 days
+
 ## compromised_log.rpt
 This report generates an appendix with tables of all hosts where a beacon was spawned and all users that were compromised/added to the "Credentials" tab. 
 
