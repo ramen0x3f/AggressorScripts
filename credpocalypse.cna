@@ -34,15 +34,15 @@
 ## Register Aliases: ##
 beacon_command_register("begin_credpocalypse", 
 	"Monitor beacons for new users and steal their passwords when they login",
-	"Synopsis: begin_credpocalypse", 
+	"Synopsis: begin_credpocalypse\n\n" . 
 	"Adds current beacon to watchlist and routinely checks for new users. When a user is in the process list but not the Credentials tab, credpocalypse runs logonpasswords on that beacon.");
 beacon_command_register("end_credpocalypse", 
 	"Stop monitoring beacons for new users",
-	"Synopsis: end_credpocalypse [all]", 
+	"Synopsis: end_credpocalypse [all]\n\n" .  
 	"If run without arguments, removes current beacon from watchlist. If 'all' is added, clears whole watchlist.");
 beacon_command_register("credpocalypse_interval", 
 	"Change the interval time for Credpocalypse checks",
-	"Synopsis: credpocalypse_interval [time]", 
+	"Synopsis: credpocalypse_interval [time]\n\n" . 
 	"Options: 1m, 5m (default), 10m, 30m, 60m. If no time supplied, default is used.");
 
 global('@captured_creds @watchlist $interval');
