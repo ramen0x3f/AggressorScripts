@@ -3,7 +3,7 @@
 ############
 ## Find targets where you're local admin and list users who logged in within the last 90 days.
 ## Author: Alyssa (ramen0x3f)
-## Last updated: 2018-02-06
+## Last updated: 2018-02-21
 
 ## Like Chris King's (raikiasec) CredNinja but less fancy. And in Aggressor. 
 ## CredNinja: https://github.com/Raikia/CredNinja
@@ -36,7 +36,8 @@ sub callback {
 					$date = parseDate("MM/dd/yyy HH:mm:ss", @x[2]);
 					$ninetydays = ( ticks() - 7776000000 ); 
 					if ( $ninetydays < $date ) {
-						add(@users, @x[-1]);
+						$diff = (ticks() - $date) / 86400000;
+						add(@users, @x[-1] . " (" . $diff . ")");
 					}
 				}
 			}
@@ -49,6 +50,8 @@ sub callback {
 }
 
 sub cdolla {
+	$getusers = false;
+	
 	if ( $2 ismatch "-users" || $3 ismatch "-users" ) {
 		blog($1, "Host:\t\t\tUsers (Last 90 days):");
 		blog($1, "------------------------------------------------------");
@@ -69,8 +72,6 @@ sub cdolla {
 			bls($1, "\\\\" . %t['address'] . "\\C$\\Users", &callback);
 		}
 	}
-
-	$getusers = false;
 }
 
 alias cdolla {
