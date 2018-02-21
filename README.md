@@ -19,6 +19,7 @@ Usage:
 Notes:
 * c is an alias for cdolla
 * if -users is specified, will also print users who logged in within last 90 days
+* The list of users will look like "UserName1 (31), Username2 (48)" where the numbers in parentheses are days since last login
 
 ## compromised_log.rpt
 This report generates an appendix with tables of all hosts where a beacon was spawned and all users that were compromised/added to the "Credentials" tab. 
