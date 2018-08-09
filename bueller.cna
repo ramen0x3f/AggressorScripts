@@ -1,0 +1,69 @@
+#### Bueller ####
+## Automate portscans to check which beacons have access to a specific host/service
+## Author: Alyssa (@ramen0x3f)
+## Last Updated: 2018-07-17
+
+## Usage ##
+# 1. Select all beacon(s) you want to check access from 
+# 2. Right click and select "Bueller? Anyone?"
+# 3. Enter target host and port
+# 4. Open "View" > "Script Console" to see output.
+#	> Note: it may take a while for all beacons to call back depending on your sleep time. 
+
+######################################################################
+## Utility Functions ## 
+global('@watchlist @connected $thost $tport $target');
+
+sub rollcall {
+	#Set vars
+	$thost = $3['host'];
+	$tport = $3['port'];
+	$target = '*' . $thost . ":" . $tport . '*';
+	$pids = join(', ', map({ return beacon_info($1, "pid"); }, @watchlist));
+
+	#Reach out 
+	println("##############################################################");
+	println("Checking for connections to " . $thost . ":" . $tport . " from " . $pids);
+	println("##############################################################");
+	foreach $bid (@watchlist) {
+		bportscan($bid, $thost, $tport, "none");
+	}
+}
+
+
+######################################################################
+## Menu and Events ##
+popup beacon_bottom {
+	item "Bueller? Anyone?" {
+		clear(@watchlist);
+		clear(@connected);
+		addAll(@watchlist, $1);
+
+		$dialog = dialog("Bueller?", %(host => "10.10.10.10", port => "445"), &rollcall);
+		drow_text($dialog, "host", "Target host:  ");
+		drow_text($dialog, "port", "Target port: ");
+		dbutton_action($dialog, "Roll Call");
+		dialog_show($dialog);
+	}
+}
+
+on beacon_output {
+	#See if we're waiting on the beacon
+	if ( $1 !in @connected && $1 in @watchlist) { 
+		#Mark as a match 
+		if ( $target iswm $2) {
+			add(@connected, $1); 
+			remove(@watchlist, $1);
+			println("[+] " . beacon_info($1, "internal") . " (" . beacon_info($1, "pid") . ") can hit target.");
+		}
+		#Remove if no match
+		else if ( '*Scanner module is complete*' iswm $2 ) {
+			println("[!]  " . beacon_info($1, "internal") . " (" . beacon_info($1, "pid") . ") can NOT hit target.");
+			remove(@watchlist, $1); 
+		}
+
+		else {
+			println($2);
+		}
+	}
+}
