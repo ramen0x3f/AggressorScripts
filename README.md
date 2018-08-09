@@ -2,6 +2,18 @@
 
 Disclaimer: These scripts are to help you audit your machines or machines you're authorized to audit. Don't use these on anything you don't have the owner's explicit permission to test on. That's mean. Also illegal. 
 
+## bueller.cna
+Automate portscans to check which beacons have access to a specific host
+
+Usage:
+```
+1. Select all beacon(s) you want to check access from 
+2. Right click and select "Bueller? Anyone?"
+3. Enter target host and port
+4. Open "View" > "Script Console" to see output.
+ > Note: it may take a while for all beacons to call back depending on your sleep time. 
+```
+
 ## cdolla.cna
 Find targets where you're local admin and list users who logged in within the last 90 days.
 
@@ -70,6 +82,18 @@ credpocalypse_interval [time]	- 1m, 5m (default), 10m, 30m, 60m
 * Remove from watchlist
 * Change time interval that Credpocalypse checks watchlist
 * View the watchlist 
+
+## portscan_results.cna 
+See and sort results from portscan module in a new tab
+
+CREDIT:
+This script uses the awesome visualization/tab code made by @001SPARTaN (for @r3dqu1nn)
+As seen here: https://github.com/harleyQu1nn/AggressorScripts/blob/master/logvis.cna
+
+Usage:
+```
+View > "Port Scan Results". Click column to sort.
+```
 
 ## save_log.cna 
 Use to export command output, so you don't have to grep beacon logs for info. 
