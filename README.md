@@ -83,6 +83,33 @@ credpocalypse_interval [time]	- 1m, 5m (default), 10m, 30m, 60m
 * Change time interval that Credpocalypse checks watchlist
 * View the watchlist 
 
+## leave\_no\_trace.cna
+Track/clean up dropped files, because littering is bad. 
+
+Includes a tab to view all files uploaded through beacons during an engagement. 
+
+Usage:
+* View > "Leave No Trace". Click column to sort. 
+```
+(By default all items show as Status: ?. Click "Check for litter" to update.) 
+```
+* Right click items 
+```
+    > "Search and Destroy" tries to remove items from the chosen beacon
+    > "Check for litter" 
+        - Does an LS to look for the dest_file from the chosen beacon
+        - Updates left column of results with status (cleaned, NOT cleaned, ?)
+```
+
+Coming soon:
+* Additional options to specify directories/paths (in cases dest_file was the filename only)
+* Track bcp() calls in archives too instead of just bupload() 
+* Add interesting filenames/directories to compromised_log.rpt for easier reporting to blue team
+
+FAIR WARNING:
+* If you select a dest_file that has only the filename (not a full path as well) this will fail. 
+* I'm sorry - it's not my fault. It's all I could pull from the archives/upload event.
+
 ## portscan_results.cna 
 See and sort results from portscan module in a new tab
 
