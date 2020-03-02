@@ -88,7 +88,7 @@ Parse data from Teamserver .bin files and export as TSVs.
 
 Results will be saved as prefix\_\[data type\].tsv. The default prefix, if not specified, is "export". (e.g. export_credentials.tsv)
 
-Set up: `pip3 install javaobs-py3`
+Set up: `pip3 install javaobj-py3`
 
 Usage:
 ```
