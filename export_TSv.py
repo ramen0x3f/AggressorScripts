@@ -2,11 +2,11 @@
 Description:	Export TSVs from Teamserver bins 
 Author:			Alyssa (@ramen0x3f)
 Created:		2020-02-28
-Last Updated:	2020-02-28
+Last Updated:	2020-03-02
 
 Dependencies: pip3 install javaobj-py3
 
-Usage: python3 export_TSv.py [--credentials data/credentials.bin] [--sessions data/sessions.bin] [--targets data/targets.bin] [--prefix file_prefix_for_results]
+Usage: python3 export_TSv.py [--credentials data/credentials.bin] [--listeners data/listeners.bin]  [--sessions data/sessions.bin] [--targets data/targets.bin] [--prefix file_prefix_for_results]
 """
 from argparse import ArgumentParser,RawTextHelpFormatter
 from javaobj import loads 
@@ -24,6 +24,14 @@ def print_tsv(data_type, data, prefix):
 			for d in data:
 				print("{}\\{}\t{}\t{}\t{}".format(d["realm"],d["user"],d["password"],d["host"],d["source"]), file=output_file)
 			print("[+] Completed parsing credentials")
+
+		## Listen here, pal 
+		elif data_type == "listeners":
+			print("[+] Parsing listeners")
+			print("Listener name\tHost\tPort\tBeacons\tListener type", file=output_file)
+			for d in data:
+				print("{}\t{}\t{}\t{}\t{}".format(d["name"],d["host"],d["port"],d["beacons"],d["payload"]), file=output_file)
+			print("[+] Completed parsing listeners")
 
 		## (ob)Session. By Calvin Klein. 
 		elif data_type == "sessions":
@@ -51,6 +59,8 @@ if __name__=="__main__":
 	## For arguments sake
 	parser.add_argument('--credentials',type=str,
 						help='Provide a credentials.bin file')
+	parser.add_argument('--listeners',type=str,
+						help='Provide a listeners.bin file')
 	parser.add_argument('--sessions',type=str,
 						help='Provide a sessions.bin file')
 	parser.add_argument('--targets',type=str,
@@ -72,6 +82,8 @@ if __name__=="__main__":
 		print("[+] Export time!")
 		if args.credentials and path.exists(args.credentials):
 			print_tsv("credentials", [d for k,d in loads(open(args.credentials,"rb").read()).items()], prefix)
+		if args.listeners and path.exists(args.listeners):
+			print_tsv("listeners", [d for k,d in loads(open(args.listeners,"rb").read()).items()], prefix)
 		if args.sessions and path.exists(args.sessions):
 			print_tsv("sessions", [d for k,d in loads(open(args.sessions,"rb").read()).items()], prefix)
 		if args.targets and path.exists(args.targets):
