@@ -83,6 +83,18 @@ credpocalypse_interval [time]	- 1m, 5m (default), 10m, 30m, 60m
 * Change time interval that Credpocalypse checks watchlist
 * View the watchlist 
 
+## export_TSv.py
+Parse data from Teamserver .bin files and export as TSVs. 
+
+Results will be saved as prefix\_\[data type\].tsv. The default prefix, if not specified, is "export". (e.g. export_credentials.tsv)
+
+Set up: `pip3 install javaobs-py3`
+
+Usage:
+```
+python3 export_TSv.py [--credentials data/credentials.bin] [--sessions data/sessions.bin] [--targets data/targets.bin] [--prefix file_prefix_for_results]
+```
+
 ## leave\_no\_trace.cna
 Track/clean up dropped files, because littering is bad. 
 
