@@ -92,7 +92,7 @@ Set up: `pip3 install javaobj-py3`
 
 Usage:
 ```
-python3 export_TSv.py [--credentials data/credentials.bin] [--sessions data/sessions.bin] [--targets data/targets.bin] [--prefix file_prefix_for_results]
+python3 export_TSv.py [--credentials data/credentials.bin] [--listeners data/listeners.bin] [--sessions data/sessions.bin] [--targets data/targets.bin] [--prefix file_prefix_for_results]
 ```
 
 ## leave\_no\_trace.cna
