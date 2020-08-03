@@ -28,9 +28,17 @@ def print_tsv(data_type, data, prefix):
 		## Listen here, pal 
 		elif data_type == "listeners":
 			print("[+] Parsing listeners")
-			print("Listener name\tHost\tPort\tBeacons\tListener type", file=output_file)
+			print("#Listener name\tHost\tPort\tBeacons\tListener type\tPort bind\tC2 Profile\tProxy", file=output_file)
 			for d in data:
-				print("{}\t{}\t{}\t{}\t{}".format(d["name"],d["host"],d["port"],d["beacons"],d["payload"]), file=output_file)
+				name = d['name'] if 'name' in d else ''
+				host = d['host'] if 'host' in d else ''
+				port = d['port'] if 'port' in d else ''
+				beacons = d['beacons'] if 'beacons' in d else ''
+				payload = d['payload'] if 'payload' in d else ''
+				bindto = d['bindto'] if 'bindto' in d else ''
+				profile = d['profile'] if 'profile' in d else ''
+				proxy = d['proxy'] if 'proxy' in d else ''
+				print("{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}".format(name,host,port,beacons,payload,bindto,profile,proxy), file=output_file)
 			print("[+] Completed parsing listeners")
 
 		## (ob)Session. By Calvin Klein. 
@@ -49,6 +57,18 @@ def print_tsv(data_type, data, prefix):
 				print("{}\t{}\t{} {}".format(d["name"],d["address"],d["os"],d["version"]), file=output_file)
 			print("[+] Completed parsing targets")
 		
+		## Don't loose control
+		elif data_type == "c2info":
+			print("[+] Parsing c2info")
+			print("#Beacon ID\tDomains\tPort\tProtocol", file=output_file)
+			for d in data:
+				bid = d['bid'] if 'bid' in d else ''
+				domains = d['domains'] if 'domains' in d else ''
+				port = d['port'] if 'port' in d else ''
+				proto = d['proto'] if 'proto' in d else ''
+				print("{}\t{}\t{}\t{}".format(bid,domains,port,proto), file=output_file)
+			print("[+] Completed parsing c2info")
+
 		## If you fail this badly, I'm impressed. 
 		else:
 			print("[!] Invalid data type chosen")
@@ -65,6 +85,8 @@ if __name__=="__main__":
 						help='Provide a sessions.bin file')
 	parser.add_argument('--targets',type=str,
 						help='Provide a targets.bin file')
+	parser.add_argument('--c2info',type=str, 
+			    			help='Provide a c2info.bin file')
 	parser.add_argument('--prefix',type=str, 
 						help='Prefix for TSV files. Default is "export".')
 
@@ -88,5 +110,7 @@ if __name__=="__main__":
 			print_tsv("sessions", [d for k,d in loads(open(args.sessions,"rb").read()).items()], prefix)
 		if args.targets and path.exists(args.targets):
 			print_tsv("targets", [d for k,d in loads(open(args.targets,"rb").read()).items()], prefix)
+		if args.c2info and path.exists(args.c2info):
+			print_tsv("c2info", [d for k,d in loads(open(args.c2info,"rb").read()).items()], prefix)
 	except:
 		print("[!] Something went wrong, but I'm too lazy to put in more validation. Check your input files or whatever.")
