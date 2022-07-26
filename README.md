@@ -83,7 +83,7 @@ credpocalypse_interval [time]	- 1m, 5m (default), 10m, 30m, 60m
 * Change time interval that Credpocalypse checks watchlist
 * View the watchlist 
 
-## export_TSv.py
+## Parse_cs_bin.py
 Parse data from Teamserver .bin files and export as TSVs. 
 
 Results will be saved as prefix\_\[data type\].tsv. The default prefix, if not specified, is "export". (e.g. export_credentials.tsv)
@@ -92,7 +92,8 @@ Set up: `pip3 install javaobj-py3`
 
 Usage:
 ```
-python3 export_TSv.py [--credentials data/credentials.bin] [--listeners data/listeners.bin] [--sessions data/sessions.bin] [--targets data/targets.bin] [--prefix file_prefix_for_results]
+python3 parse_cs_bin.py <directory containing CobaltStrike .bin files>
+
 ```
 
 ## leave\_no\_trace.cna
