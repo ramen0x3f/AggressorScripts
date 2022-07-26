@@ -19,7 +19,7 @@ from sys import argv
 import csv, javaobj 
 
 if __name__=="__main__":
-	parser = ArgumentParser(description="Generate CSV representations of Cobalt Strike .bin logs ) 
+	parser = ArgumentParser(description="Generate CSV representations of Cobalt Strike .bin logs") 
 
 	## For arguments sake
 	parser.add_argument('directory',type=str,
